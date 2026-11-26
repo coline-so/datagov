@@ -1,0 +1,19 @@
+dimension,rule_in_plain_words,column,how_you_measured_it,failing_rows,total_rows,score_pct,severity_high_medium_low,who_should_fix_owner_steward_custodian
+Completeness,email is filled,email (customers),pandas: isna() on email,48,1241,96.13,medium,Owner
+Completeness,country is filled,country (customers),pandas: isna() on country,37,1241,97.02,low,Steward
+Uniqueness,customer_id is unique,customer_id (customers),pandas: duplicated() = extra copies of a customer_id,8,1241,99.36,high,Custodian
+Uniqueness,one account per email (trim + lower case),email (customers),"pandas: strip + lower, duplicated() on non-empty emails",60,1193,94.97,medium,Steward
+Validity,email looks like an email,email (customers),"pandas: str.match(^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$) on non-empty emails",28,1193,97.65,medium,Owner
+Validity,"loyalty_tier is bronze, silver, gold or platinum",loyalty_tier (customers),pandas: isin() on the 4 allowed values,13,1241,98.95,low,Steward
+Validity,French postal code has 5 digits,postal_code (customers),pandas: str.fullmatch(\d{5}) on customers whose country is France,48,723,93.36,medium,Custodian
+Consistency,"country is an ISO-2 code (FR, DE, ES, BE)",country (customers),pandas: isin() on non-empty values (17 spellings for 4 countries),299,1204,75.17,medium,Custodian
+Consistency,signup_date is written YYYY-MM-DD,signup_date (customers),pandas: str.fullmatch(\d{4}-\d{2}-\d{2}),303,1241,75.58,medium,Custodian
+Accuracy,birth_date is plausible: between 1906 and today minus 18 years,birth_date (customers),"pandas: to_datetime on the ISO dates only (174 non-ISO dates not checked), then between()",8,1067,99.25,high,Steward
+Timeliness,latest order is less than 1 day old,order_date (orders),"pandas: today minus the latest order_date that is not in the future (2026-11-12, 14 days old); dataset-level rule",1,1,0.0,medium,Custodian
+Uniqueness,order_id is unique,order_id (orders),Great Expectations ExpectColumnValuesToBeUnique; failing = extra copies (GX counts 14 rows involved),7,5207,99.87,high,Custodian
+Validity,every order points to an existing customer,customer_id (orders),Great Expectations ExpectColumnValuesToBeInSet with the customer_id of customers.csv,14,5207,99.73,high,Steward
+Completeness,order_date is filled,order_date (orders),Great Expectations ExpectColumnValuesToNotBeNull,11,5207,99.79,medium,Owner
+Accuracy,no order is dated in the future,order_date (orders),"Great Expectations ExpectColumnValuesToBeBetween, max = today",5,5207,99.9,medium,Steward
+Validity,"status is pending, shipped, delivered, cancelled or returned",status (orders),"Great Expectations ExpectColumnValuesToBeInSet (SHIPPED, Delivered, 'delivered ', canceled)",9,5207,99.83,medium,Custodian
+Accuracy,total_amount_eur is above 0 and at most 5000,total_amount_eur (orders),"Great Expectations ExpectColumnValuesToBeBetween(0 exclusive, 5000)",6,5207,99.88,high,Owner
+Accuracy,"payment amounts are in euros (value range, median, mean and 1-2 decimals)",amount (payments_batch_2),"Great Expectations smart suite on payments_batch_2.csv; naive suite passes, smart suite fails 4 of 9 expectations",600,600,0.0,high,Owner

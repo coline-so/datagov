@@ -1,0 +1,1 @@
+The missing guard was a test: nothing checked the value range or distribution of payments.amount, so when the payment team switched from euros to cents, the new batch passed every basic check (not null, unique, allowed values) and loaded 100 times too big.
